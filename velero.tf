@@ -1,3 +1,10 @@
+resource "kubernetes_namespace" "velero" {
+  count = var.velero_enabled ? 1: 0
+  metadata {
+    name = "velero"
+  }
+}
+
 resource "aws_s3_bucket" "log_bucket" {
   count = var.velero_enabled ? 1: 0
   bucket = "${var.deployment_id}-s3-bucket-logs"
@@ -56,6 +63,25 @@ resource "aws_iam_policy" "velero_pod_bucket_access_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
+        "Effect": "Allow",
+        "Action": [
+            "ec2:AttachVolume",
+            "ec2:CopySnapshot",
+            "ec2:DescribeVolumeAttribute",
+            "ec2:DescribeVolumesModifications",
+            "ec2:DescribeVolumeStatus",
+            "ec2:DescribeVolumes",
+            "ec2:DetachVolume",
+            "ec2:CreateSnapshot",
+            "ec2:DeleteSnapshot",
+            "ec2:ImportSnapshot",
+            "ec2:CreateTags"
+        ],
+        "Resource": [
+            "*"
+        ]
+    },
+    {
       "Effect": "Allow",
       "Action": [
         "s3:*"
@@ -92,7 +118,7 @@ resource "aws_iam_role" "velero_role" {
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
-          "${local.oidc_provider}:sub": "system:serviceaccount:${kubernetes_namespace.system-components.metadata.0.name}:velero-service-account"
+          "${local.oidc_provider}:sub": "system:serviceaccount:${kubernetes_namespace.velero.0.metadata.0.name}:velero-service-account"
         }
       }
     }
@@ -107,7 +133,7 @@ resource "helm_release" "velero" {
   repository = "https://vmware-tanzu.github.io/helm-charts"
   chart      = "velero"
   version    = "2.12.0"
-  namespace  = kubernetes_namespace.system-components.metadata.0.name
+  namespace  = kubernetes_namespace.velero.0.metadata.0.name
   timeout    = 1200
 
   values = [<<EOF
@@ -144,7 +170,7 @@ securityContext:
 configuration:
   provider: aws
   backupStorageLocation:
-    name: aws
+    name: default
     bucket: "${aws_s3_bucket.velero-backups.0.bucket}"
     prefix: "${var.deployment_id}-velero-backups/"
     # prefix: "${var.deployment_id}-velero-backups-log/"
@@ -152,7 +178,7 @@ configuration:
       region: "${var.aws_region}"
 
   volumeSnapshotLocation:
-    name: aws
+    name: default
     config:
       region: "${var.aws_region}"
 
@@ -183,7 +209,7 @@ snapshotsEnabled: true
 # Whether to deploy the restic daemonset.
 # This is the component that backs up
 # persistent volumes.
-deployRestic: false
+deployRestic: true
 
 schedules:
   minute:
@@ -194,12 +220,6 @@ schedules:
        - "*"
   hour:
     schedule: "0 0 * * *"
-    template:
-      ttl: "24h"
-      includedNamespaces:
-       - "*"
-  day:
-    schedule: "0 0 0 * *"
     template:
       ttl: "720h"
       includedNamespaces:
