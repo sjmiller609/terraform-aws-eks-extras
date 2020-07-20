@@ -9,11 +9,11 @@ locals {
   cluster_name = "${var.deployment_id}-${random_string.suffix.result}"
 
   region = data.aws_region.current.name
-  azs = ["${local.region}a", "${local.region}b"]
+  azs    = ["${local.region}a", "${local.region}b"]
 
-  vpc_id = module.vpc.vpc_id
+  vpc_id          = module.vpc.vpc_id
   private_subnets = module.vpc.private_subnets
-  public_subnets = module.vpc.public_subnets
+  public_subnets  = module.vpc.public_subnets
   user_data = base64encode(<<EOT
 #!/bin/bash -xe
 /etc/eks/bootstrap.sh --b64-cluster-ca '${module.eks.cluster_certificate_authority_data}' --apiserver-endpoint '${module.eks.cluster_endpoint}' --kubelet-extra-args "" '${local.cluster_name}'

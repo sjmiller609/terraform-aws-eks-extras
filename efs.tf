@@ -1,6 +1,6 @@
 resource "aws_efs_file_system" "default" {
   count     = var.efs_enabled ? 1 : 0
-	tags			= local.tags
+  tags      = local.tags
   encrypted = true
 }
 
@@ -45,8 +45,8 @@ resource "aws_security_group_rule" "egress" {
 }
 
 resource "helm_release" "efs" {
-  name       = "aws-efs-csi-driver"
-  chart      = "https://github.com/kubernetes-sigs/aws-efs-csi-driver/releases/download/v0.3.0/helm-chart.tgz"
+  name  = "aws-efs-csi-driver"
+  chart = "https://github.com/kubernetes-sigs/aws-efs-csi-driver/releases/download/v0.3.0/helm-chart.tgz"
 }
 
 // resource "helm_release" "nfs" {

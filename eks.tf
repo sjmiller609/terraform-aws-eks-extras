@@ -28,10 +28,10 @@ provider "helm" {
   # Helm version 3 provider is 1.*.*
   version = "~> 1.2"
   kubernetes {
-    host     							 = data.aws_eks_cluster.cluster.endpoint
-  	token                  = data.aws_eks_cluster_auth.cluster.token
-  	cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  	load_config_file       = false
+    host                   = data.aws_eks_cluster.cluster.endpoint
+    token                  = data.aws_eks_cluster_auth.cluster.token
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+    load_config_file       = false
   }
 }
 
@@ -43,18 +43,18 @@ resource "aws_security_group" "allow_bastion" {
   dynamic "ingress" {
     for_each = var.enable_bastion ? ["placeholder"] : []
     content {
-    	description = "SSH ingress from bastion host"
-    	protocol    = "tcp"
-    	to_port 	  = 22
-    	from_port   = 22
-    	security_groups = [aws_security_group.bastion_sg.0.id]
+      description     = "SSH ingress from bastion host"
+      protocol        = "tcp"
+      to_port         = 22
+      from_port       = 22
+      security_groups = [aws_security_group.bastion_sg.0.id]
     }
   }
 }
 
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
-  version         = "12.1.0"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "12.1.0"
 
   cluster_name           = local.cluster_name
   cluster_version        = var.cluster_version
@@ -70,19 +70,19 @@ module "eks" {
   worker_groups = []
   worker_groups_launch_template = [
     {
-      name                 = "launch-template-${local.cluster_name}"
-      key_name             = aws_key_pair.worker-nodes.key_name
-      instance_type        = "t2.small"
+      name                          = "launch-template-${local.cluster_name}"
+      key_name                      = aws_key_pair.worker-nodes.key_name
+      instance_type                 = "t2.small"
       additional_security_group_ids = [aws_security_group.allow_bastion.id]
-      asg_desired_capacity = 0
-      asg_max_size         = 0
-      asg_min_size         = 0
-      public_ip            = false
+      asg_desired_capacity          = 0
+      asg_max_size                  = 0
+      asg_min_size                  = 0
+      public_ip                     = false
     }
   ]
 
   cluster_endpoint_private_access = false
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access  = true
 
   manage_aws_auth = true
 
@@ -91,32 +91,32 @@ module "eks" {
 
 resource "spotinst_ocean_aws" "cluster" {
 
-  name = local.cluster_name
+  name          = local.cluster_name
   controller_id = local.cluster_name
 
   region = local.region
 
-  max_size         = 10
-  min_size         = 1
+  max_size = 10
+  min_size = 1
 
   subnet_ids = local.private_subnets
 
   // --- LAUNCH CONFIGURATION --------------
-  image_id             = module.eks.workers_default_ami_id
-  security_groups      = [module.eks.worker_security_group_id, aws_security_group.allow_bastion.id]
-  user_data            = local.user_data
-  iam_instance_profile = module.eks.worker_iam_instance_profile_names[0]
-  root_volume_size     = 20
-  monitoring           = false
-  ebs_optimized        = true
+  image_id                    = module.eks.workers_default_ami_id
+  security_groups             = [module.eks.worker_security_group_id, aws_security_group.allow_bastion.id]
+  user_data                   = local.user_data
+  iam_instance_profile        = module.eks.worker_iam_instance_profile_names[0]
+  root_volume_size            = 20
+  monitoring                  = false
+  ebs_optimized               = true
   associate_public_ip_address = false
-  key_name             = aws_key_pair.worker-nodes.key_name
+  key_name                    = aws_key_pair.worker-nodes.key_name
 
   // --- STRATEGY --------------------
   fallback_to_ondemand       = true
   draining_timeout           = 120
   utilize_reserved_instances = false
-  grace_period = 600
+  grace_period               = 600
   // ---------------------------------
 
   # TODO: tags
@@ -128,10 +128,10 @@ resource "spotinst_ocean_aws" "cluster" {
 
 
 module "ocean-controller" {
-  source = "spotinst/ocean-controller/spotinst"
+  source  = "spotinst/ocean-controller/spotinst"
   version = "~> 0.2"
 
   cluster_identifier = local.cluster_name
-  spotinst_token   = var.spotinist_token
-  spotinst_account = var.spotinist_account
+  spotinst_token     = var.spotinist_token
+  spotinst_account   = var.spotinist_account
 }

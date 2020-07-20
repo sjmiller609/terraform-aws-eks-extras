@@ -22,26 +22,26 @@ variable "tags" {
 }
 
 variable "spotinist_token" {
-  type        = string
+  type = string
 }
 
 variable "spotinist_account" {
-  type        = string
+  type = string
 }
 
 variable "efs_enabled" {
-  type        = bool
+  type    = bool
   default = true
 }
 
 variable "velero_enabled" {
-  type        = bool
+  type    = bool
   default = true
 }
 
 variable "aws_region" {
   default = "us-east-1"
-  type = string
+  type    = string
 }
 
 variable "aws_account_id" {
@@ -49,7 +49,7 @@ variable "aws_account_id" {
 }
 
 variable "enable_bastion" {
-  type = bool
+  type    = bool
   default = false
 }
 

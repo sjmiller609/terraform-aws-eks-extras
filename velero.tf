@@ -1,18 +1,18 @@
 resource "kubernetes_namespace" "velero" {
-  count = var.velero_enabled ? 1: 0
+  count = var.velero_enabled ? 1 : 0
   metadata {
     name = "velero"
   }
 }
 
 resource "aws_s3_bucket" "log_bucket" {
-  count = var.velero_enabled ? 1: 0
+  count  = var.velero_enabled ? 1 : 0
   bucket = "${var.deployment_id}-s3-bucket-logs"
   acl    = "log-delivery-write"
   lifecycle_rule {
     id      = "${var.deployment_id}-velero-backups-log-lifecycle-rule"
     enabled = true
-    prefix = "${var.deployment_id}-velero-backups-log/"
+    prefix  = "${var.deployment_id}-velero-backups-log/"
     transition {
       days          = 30
       storage_class = "STANDARD_IA"
@@ -38,7 +38,7 @@ resource "aws_s3_bucket" "velero-backups" {
   lifecycle_rule {
     id      = "${var.deployment_id}-velero-backups"
     enabled = true
-    prefix = "${var.deployment_id}-velero-backups/"
+    prefix  = "${var.deployment_id}-velero-backups/"
     transition {
       days          = 30
       storage_class = "STANDARD_IA"
@@ -54,11 +54,11 @@ resource "aws_s3_bucket" "velero-backups" {
 }
 
 resource "aws_iam_policy" "velero_pod_bucket_access_policy" {
-  count = var.velero_enabled ? 1: 0
+  count       = var.velero_enabled ? 1 : 0
   name        = "${var.deployment_id}_velero_pod_bucket_access_policy"
   path        = "/"
   description = "A policy that allows access for the Velero server to the backup bucket"
-  policy = <<EOF
+  policy      = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -97,14 +97,14 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "velero_policy_attachment" {
-  count = var.velero_enabled ? 1: 0
+  count      = var.velero_enabled ? 1 : 0
   role       = aws_iam_role.velero_role.0.name
   policy_arn = aws_iam_policy.velero_pod_bucket_access_policy.0.arn
 }
 
 resource "aws_iam_role" "velero_role" {
-  count = var.velero_enabled ? 1: 0
-  name = "${var.deployment_id}_velero_role"
+  count = var.velero_enabled ? 1 : 0
+  name  = "${var.deployment_id}_velero_role"
 
   assume_role_policy = <<EOF
 {
