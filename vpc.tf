@@ -13,18 +13,16 @@ module "vpc" {
   azs = local.azs
 
   # Each of these subnets has 16382 IPs
-  private_subnets = ["10.0.128.0/18", "10.0.192.0/18"]
+  private_subnets = ["10.0.128.0/18", "10.0.192.0/18", "10.0.64.0/18"]
   # Generally, the public subnets are only needed
   # for load balancers and NAT, so we allocate smaller
   # subnets, with 1022 hosts each.
-  public_subnets = ["10.0.0.0/22", "10.0.4.0/22"]
+  public_subnets = ["10.0.0.0/22", "10.0.4.0/22", "10.0.8.0/22"]
   # Unallocated subnets for future use
   #
-  # 10.0.8.0/22
   # 10.0.12.0/22
   # 10.0.16.0/20
   # 10.0.32.0/19
-  # 10.0.64.0/18
 
   enable_nat_gateway = true
   single_nat_gateway = false

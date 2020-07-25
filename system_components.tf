@@ -7,15 +7,6 @@ resource "helm_release" "metrics-server" {
   version    = "4.2.0"
 }
 
-resource "helm_release" "vertical-pod-autoscaler" {
-  chart      = "vertical-pod-autoscaler"
-  name       = "vertical-pod-autoscaler"
-  namespace  = "kube-system"
-  repository = "https://cowboysysop.github.io/charts/"
-  timeout    = 1200
-  version    = "2.0.0"
-}
-
 resource "helm_release" "traefik" {
   chart      = "traefik"
   name       = "traefik"

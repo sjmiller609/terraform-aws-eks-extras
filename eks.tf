@@ -68,6 +68,10 @@ module "eks" {
   vpc_id = local.vpc_id
 
   worker_groups = []
+  # This worker group is used as a spec for
+  # Ocean. We do not need to ever create an instance
+  # in this group, so long as we set the minimum size
+  # in Ocean to 1 or greater.
   worker_groups_launch_template = [
     {
       name                          = "launch-template-${local.cluster_name}"
@@ -96,6 +100,7 @@ resource "spotinst_ocean_aws" "cluster" {
 
   region = local.region
 
+  # Free tier of Spot.io
   max_size = 10
   min_size = 1
 
@@ -119,7 +124,6 @@ resource "spotinst_ocean_aws" "cluster" {
   grace_period               = 600
   // ---------------------------------
 
-  # TODO: tags
   tags {
     key   = "kubernetes.io/cluster/${module.eks.cluster_id}"
     value = "owned"
