@@ -100,10 +100,14 @@ resource "aws_instance" "bastion" {
   count                  = var.enable_bastion ? 1 : 0
   ami                    = data.aws_ami.ubuntu.id
   key_name               = aws_key_pair.bastion_ssh_key[0].key_name
-  instance_type          = "t2.micro"
+  instance_type          = "t3.nano"
   subnet_id              = module.vpc.public_subnets[0]
   vpc_security_group_ids = [aws_security_group.bastion_sg[0].id]
   user_data              = <<EOS
   apt-get update
   EOS
+}
+
+output "bastion_ip_address" {
+  value = join("", aws_instance.bastion.*.public_ip)
 }
