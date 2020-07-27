@@ -1,4 +1,5 @@
 terraform.tfstate*
+local-path-provisioner-*
 terraform.tfstate
 .terraform/*
 kubeconfig*

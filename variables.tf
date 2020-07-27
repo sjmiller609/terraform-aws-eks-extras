@@ -53,3 +53,8 @@ variable "enable_bastion" {
   default = false
 }
 
+variable "local_path_provisioner_version" {
+  type    = string
+  default = "0.0.14"
+}
+
