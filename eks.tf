@@ -104,19 +104,19 @@ resource "spotinst_ocean_aws" "cluster" {
   max_size = 10
   min_size = 1
 
-  # We will only allow
-  # instance types with 4 or more CPU
-  # and 8Gi or more of Memory.
-  # Do not select any burstable instance types.
-  # Select only types with fast i/o with local SSD
-  # because this is important for etcd performance.
-  # Only choose instances with one local SSD.
-  whitelist = ["r5d.xlarge", "r5d.2xlarge",
-    "m5d.xlarge", "m5d.2xlarge",
-    "i3.xlarge", "i3.2xlarge",
-    "c5d.xlarge", "c5d.9xlarge", "c5d.4xlarge", "c5d.2xlarge",
-    "r5dn.xlarge", "r5dn.2xlarge",
-  "m5dn.xlarge", "m5dn.2xlarge"]
+  # # We will only allow
+  # # instance types with 4 or more CPU
+  # # and 8Gi or more of Memory.
+  # # Do not select any burstable instance types.
+  # # Select only types with fast i/o with local SSD
+  # # because this is important for etcd performance.
+  # # Only choose instances with one local SSD.
+  # whitelist = ["r5d.xlarge", "r5d.2xlarge",
+  #   "m5d.xlarge", "m5d.2xlarge",
+  #   "i3.xlarge", "i3.2xlarge",
+  #   "c5d.xlarge", "c5d.9xlarge", "c5d.4xlarge", "c5d.2xlarge",
+  #   "r5dn.xlarge", "r5dn.2xlarge",
+  # "m5dn.xlarge", "m5dn.2xlarge"]
   subnet_ids = local.private_subnets
 
   // --- LAUNCH CONFIGURATION --------------
