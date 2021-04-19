@@ -20,10 +20,10 @@ resource "null_resource" "helm_repo" {
   }
 }
 resource "helm_release" "local-path-provisioner" {
-  name       = "local-path-provisioner"
-  chart      = "./local-path-provisioner-${var.local_path_provisioner_version}"
-  namespace  = "kube-system"
-  version    = var.local_path_provisioner_version
+  name      = "local-path-provisioner"
+  chart     = "./local-path-provisioner-${var.local_path_provisioner_version}"
+  namespace = "kube-system"
+  version   = var.local_path_provisioner_version
   values = [<<EOF
 ---
 replicaCount: 1
@@ -80,7 +80,7 @@ teardown: |-
   path=$1
   rm -rf $${path}
 EOF
-]
+  ]
 
 }
 

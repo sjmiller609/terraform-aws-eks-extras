@@ -39,6 +39,11 @@ variable "velero_enabled" {
   default = true
 }
 
+variable "cert_manager_enabled" {
+  type    = bool
+  default = true
+}
+
 variable "aws_region" {
   default = "us-east-1"
   type    = string
